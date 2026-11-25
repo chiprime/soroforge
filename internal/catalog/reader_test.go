@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -53,6 +54,15 @@ func TestSoroVaultInterface(t *testing.T) {
 	assert.Equal(t, "Address", in.Types.Structs[0].Fields[0].Type.Display)
 	require.Len(t, in.Types.ErrorEnums, 1)
 	require.Len(t, in.Events, 1)
+}
+
+func TestParamJSONRoundTrip(t *testing.T) {
+	orig := Param{Name: "amount", Type: Type{Display: "u128"}}
+	b, err := json.Marshal(orig)
+	require.NoError(t, err)
+	var got Param
+	require.NoError(t, json.Unmarshal(b, &got))
+	assert.Equal(t, orig, got)
 }
 
 func TestSoroVaultReaderErrors(t *testing.T) {
